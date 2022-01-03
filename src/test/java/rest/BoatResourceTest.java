@@ -9,7 +9,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 
+import dtos.Boat.BoatDTO;
 import dtos.Owner.OwnerDTO;
+import entities.Boat;
+import entities.Harbour;
 import entities.Owner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -32,11 +35,11 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-
-class OwnerResourceTest {
+class BoatResourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
-    private static Owner o1, o2, o3;
+    private static Boat b1, b2, b3;
+    private static Harbour h1, h2;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -71,16 +74,25 @@ class OwnerResourceTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        o1 = new Owner("TestNameOne", "TestAddressOne", "TestPhoneOne");
-        o2 = new Owner("TestNameTwo", "TestAddressTwo", "TestPhoneTwo");
-        o3 = new Owner("TestNameThree", "TestAddressThree", "TestPhoneThree");
+        b1 = new Boat("TestBrandOne", "TestMakeOne", "TestNameOne", "TestImageOne");
+        b2 = new Boat("TestBrandTwo", "TestMakeTwo", "TestNameTwo", "TestImageTwo");
+        b3 = new Boat("TestBrandThree", "TestMakeThree", "TestNameThree", "TestImageThree");
 
+        h1 = new Harbour("TestNameOne", "TestAddressOne", 50);
+        h2 = new Harbour("TestNameTwo", "TestAddressTwo", 30);
+
+        b1.setHarbour(h1);
+        b2.setHarbour(h1);
+        b3.setHarbour(h2);
         try {
             em.getTransaction().begin();
-            em.createQuery("delete from Owner").executeUpdate();
-            em.persist(o1);
-            em.persist(o2);
-            em.persist(o3);
+            em.createQuery("delete from Boat").executeUpdate();
+            em.createQuery("delete from Harbour").executeUpdate();
+            em.persist(b1);
+            em.persist(b2);
+            em.persist(b3);
+            em.persist(h1);
+            em.persist(h2);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -107,29 +119,29 @@ class OwnerResourceTest {
     }
 
     @Test
-    public void testServerIsUp() {
-        given().when().get("/owner/all").then().statusCode(200);
-    }
+    public void testGetBoatsByHarbour() {
+        List<BoatDTO> boats;
 
-    @Test
-    public void testGetAll() {
-        List<OwnerDTO> owners;
+        BoatDTO b1DTO = new BoatDTO(b1);
+        BoatDTO b2DTO = new BoatDTO(b2);
+        BoatDTO b3DTO = new BoatDTO(b3);
 
-        OwnerDTO o1DTO = new OwnerDTO(o1);
-        OwnerDTO o2DTO = new OwnerDTO(o2);
-        OwnerDTO o3DTO = new OwnerDTO(o3);
-
-        owners = given()
+        boats = given()
                 .contentType("application/json")
                 .accept(ContentType.JSON)
-                .get("/owner/all").then()
+                .pathParam("id", h1.getId())
+                .when()
+                .get("/boat/{id}").then()
+                .statusCode(200)
                 .extract()
                 .body()
                 .jsonPath()
-                .getList("owners", OwnerDTO.class);
+                .getList("boats", BoatDTO.class);
 
-        assertEquals(3, owners.size());
+        assertEquals(2, boats.size());
+        
+        assertThat(boats, containsInAnyOrder(b1DTO, b2DTO));
 
-        assertThat(owners, containsInAnyOrder(o1DTO, o2DTO, o3DTO));
+        assertThat(boats, not(hasItem(b3DTO)));
     }
 }

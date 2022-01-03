@@ -18,6 +18,7 @@ class OwnerFacadeTest {
     private static EntityManagerFactory emf;
     private static OwnerFacade facade;
     private static Owner o1, o2, o3;
+
     public OwnerFacadeTest() {
     }
 
@@ -34,9 +35,9 @@ class OwnerFacadeTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        o1 = new Owner("TestNameOne","TestAddressOne","TestPhoneOne");
-        o2 = new Owner("TestNameTwo","TestAddressTwo","TestPhoneTwo");
-        o3 = new Owner("TestNameThree","TestAddressThree","TestPhoneThree");
+        o1 = new Owner("TestNameOne", "TestAddressOne", "TestPhoneOne");
+        o2 = new Owner("TestNameTwo", "TestAddressTwo", "TestPhoneTwo");
+        o3 = new Owner("TestNameThree", "TestAddressThree", "TestPhoneThree");
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Owner").executeUpdate();
@@ -51,7 +52,6 @@ class OwnerFacadeTest {
 
     @AfterEach
     public void tearDown() {
-
     }
 
     @Test
