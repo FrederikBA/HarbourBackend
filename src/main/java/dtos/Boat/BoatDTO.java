@@ -32,13 +32,12 @@ public class BoatDTO {
         this.owners = OwnerDTO.getFromList(boat.getOwners());
     }
 
-    public BoatDTO(int id, String brand, String make, String name, String image, List<OwnerDTO> owners) {
+    public BoatDTO(String brand, String make, String name, String image) {
         this.id = -1;
         this.brand = brand;
         this.make = make;
         this.name = name;
         this.image = image;
-        this.owners = owners;
     }
 
     public int getId() {

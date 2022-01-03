@@ -94,4 +94,21 @@ class BoatFacadeTest {
         //Test that the harbour doesn't contain the boat b3
         assertThat(boats, not(hasItem(b3DTO)));
     }
+
+    @Test
+    public void createBoatTest() {
+        //Create a new boat: b4DTO.
+        BoatDTO b4DTO = facade.createBoat(new BoatDTO("TestBrandFour", "TestMakeFour", "TestNameFour", "TestImageFour"));
+
+        List<BoatDTO> boats = facade.getAllBoats().getBoats();
+
+
+        int expected = 4;
+        int actual = boats.size();
+        assertEquals(expected, actual);
+
+        //Confirm that b4DTO has been added to the list of boats.
+        assertThat(boats, hasItem(b4DTO));
+
+    }
 }

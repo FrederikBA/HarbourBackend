@@ -2,6 +2,7 @@ package rest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dtos.Boat.BoatDTO;
 import facades.BoatFacade;
 import utils.EMF_Creator;
 
@@ -28,5 +29,14 @@ public class BoatResource {
     @Produces(MediaType.APPLICATION_JSON)
     public String getBoatsByHarbour(@PathParam("id") int id) {
         return gson.toJson(facade.getBoatsByHarbour(id));
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String addBoat(String boat) {
+        BoatDTO b = gson.fromJson(boat, BoatDTO.class);
+        BoatDTO bNew = facade.createBoat(b);
+        return gson.toJson(bNew);
     }
 }

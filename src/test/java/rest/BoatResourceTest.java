@@ -144,4 +144,21 @@ class BoatResourceTest {
 
         assertThat(boats, not(hasItem(b3DTO)));
     }
+
+    @Test
+    public void testCreateBoat() {
+        given()
+                .contentType("application/json")
+                .body(new BoatDTO("TestBrandFour", "TestMakeFour", "TestNameFour", "TestImageFour"))
+                .when()
+                .post("boat")
+                .then()
+                .statusCode(200)
+                .body("id", notNullValue())
+                .body("brand", equalTo("TestBrandFour"))
+                .body("make", equalTo("TestMakeFour"))
+                .body("name", equalTo("TestNameFour"))
+                .body("image", equalTo("TestImageFour"));
+
+    }
 }

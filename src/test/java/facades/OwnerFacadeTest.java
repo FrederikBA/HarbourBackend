@@ -96,6 +96,6 @@ class OwnerFacadeTest {
 
         assertThat(owners, containsInAnyOrder(o1DTO, o2DTO));
 
-        assertThat(owners, not(hasItem(o3DTO)));
+        assertThat(owners, not(hasItem(o3DTO)));    
     }
 }
