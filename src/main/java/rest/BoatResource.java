@@ -39,4 +39,14 @@ public class BoatResource {
         BoatDTO bNew = facade.createBoat(b);
         return gson.toJson(bNew);
     }
+
+    @Path("/connect/{boatId}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String connectBoatToHarbour(@PathParam("boatId") int boatId, String harbour) {
+        Integer harbourId = gson.fromJson(harbour, Integer.class);
+        BoatDTO connectedBoat = facade.connectToHarbor(boatId, harbourId);
+        return gson.toJson(connectedBoat);
+    }
 }

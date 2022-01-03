@@ -3,6 +3,7 @@ package facades;
 import dtos.Boat.BoatDTO;
 import dtos.Boat.BoatsDTO;
 import entities.Boat;
+import entities.Harbour;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -54,6 +55,22 @@ public class BoatFacade {
         try {
             em.getTransaction().begin();
             em.persist(boat);
+            em.getTransaction().commit();
+            return new BoatDTO(boat);
+        } finally {
+            em.close();
+        }
+    }
+
+    //TODO: Error Handling with harbour capacity
+    public BoatDTO connectToHarbor(int boatId, int harbourId) {
+        EntityManager em = emf.createEntityManager();
+        Boat boat = em.find(Boat.class, boatId);
+        Harbour harbour = em.find(Harbour.class, harbourId);
+        boat.setHarbour(harbour);
+        try {
+            em.getTransaction().begin();
+            em.merge(boat);
             em.getTransaction().commit();
             return new BoatDTO(boat);
         } finally {

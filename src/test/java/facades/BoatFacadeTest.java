@@ -54,7 +54,6 @@ class BoatFacadeTest {
 
         b1.setHarbour(h1);
         b2.setHarbour(h1);
-        b3.setHarbour(h2);
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Boat").executeUpdate();
@@ -102,7 +101,7 @@ class BoatFacadeTest {
 
         List<BoatDTO> boats = facade.getAllBoats().getBoats();
 
-
+        //Test if the size of the boat array is now 4 instead of 3.
         int expected = 4;
         int actual = boats.size();
         assertEquals(expected, actual);
@@ -110,5 +109,19 @@ class BoatFacadeTest {
         //Confirm that b4DTO has been added to the list of boats.
         assertThat(boats, hasItem(b4DTO));
 
+    }
+
+    @Test
+    public void connectBoatTest() {
+        //Connect boat b3 to harbour h2 using their ID(s).
+        facade.connectToHarbor(b3.getId(), h2.getId());
+
+        //Get the list of boats in the harbour h2.
+        List<BoatDTO> harbourTwo = facade.getBoatsByHarbour(h2.getId()).getBoats();
+
+        BoatDTO b3DTO = new BoatDTO(b3);
+
+        //Confirm that harbour h2 now has the boat b3
+        assertThat(harbourTwo, hasItem(b3DTO));
     }
 }

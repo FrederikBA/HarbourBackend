@@ -14,6 +14,7 @@ import dtos.Owner.OwnerDTO;
 import entities.Boat;
 import entities.Harbour;
 import entities.Owner;
+import facades.BoatFacade;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
@@ -83,7 +84,6 @@ class BoatResourceTest {
 
         b1.setHarbour(h1);
         b2.setHarbour(h1);
-        b3.setHarbour(h2);
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Boat").executeUpdate();
@@ -159,6 +159,39 @@ class BoatResourceTest {
                 .body("make", equalTo("TestMakeFour"))
                 .body("name", equalTo("TestNameFour"))
                 .body("image", equalTo("TestImageFour"));
+    }
 
+    @Test
+    public void testConnectBoat() {
+        given()
+                //Connect boat b3 since it is currently has no harbour connected to it.
+                .contentType("application/json")
+                .pathParam("id", b3.getId())
+                //ID of desired harbour goes in body
+                .body(h2.getId())
+                .when()
+                .put("/boat/connect/{id}")
+                .then()
+                .statusCode(200);
+
+
+        //Check getBoatsByHarbour endpoint on harbour h2 to see if boat b3 has been connected.
+        List<BoatDTO> h2Boats;
+        h2Boats = given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .pathParam("id", h2.getId())
+                .when()
+                .get("/boat/{id}").then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList("boats", BoatDTO.class);
+
+        BoatDTO b3DTO = new BoatDTO(b3);
+
+        //Test to see if b3 has been added to h2.
+        assertThat(h2Boats, hasItem(b3DTO));
     }
 }
