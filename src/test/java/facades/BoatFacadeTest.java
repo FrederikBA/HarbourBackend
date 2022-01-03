@@ -45,15 +45,13 @@ class BoatFacadeTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        b1 = new Boat("TestBrandOne", "TestMakeOne", "TestNameOne", "TestImageOne");
-        b2 = new Boat("TestBrandTwo", "TestMakeTwo", "TestNameTwo", "TestImageTwo");
-        b3 = new Boat("TestBrandThree", "TestMakeThree", "TestNameThree", "TestImageThree");
-
         h1 = new Harbour("TestNameOne", "TestAddressOne", 50);
         h2 = new Harbour("TestNameTwo", "TestAddressTwo", 30);
 
-        b1.setHarbour(h1);
-        b2.setHarbour(h1);
+        b1 = new Boat("TestBrandOne", "TestMakeOne", "TestNameOne", "TestImageOne", h1);
+        b2 = new Boat("TestBrandTwo", "TestMakeTwo", "TestNameTwo", "TestImageTwo", h1);
+        b3 = new Boat("TestBrandThree", "TestMakeThree", "TestNameThree", "TestImageThree", h2);
+
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Boat").executeUpdate();
@@ -96,8 +94,12 @@ class BoatFacadeTest {
 
     @Test
     public void createBoatTest() {
-        //Create a new boat: b4DTO.
-        BoatDTO b4DTO = facade.createBoat(new BoatDTO("TestBrandFour", "TestMakeFour", "TestNameFour", "TestImageFour"));
+        //Create a new boat: b4.
+
+        Boat b4 = new Boat("TestBrandFour", "TestMakeFour", "TestNameFour", "TestImageFour");
+        b4.setHarbour(h2);
+        BoatDTO createdBoat = new BoatDTO(b4);
+        BoatDTO b4DTO = facade.createBoat(createdBoat);
 
         List<BoatDTO> boats = facade.getAllBoats().getBoats();
 

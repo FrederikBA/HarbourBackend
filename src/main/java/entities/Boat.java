@@ -32,6 +32,15 @@ public class Boat {
         this.owners = new ArrayList<>();
     }
 
+    public Boat(String brand, String make, String name, String image, Harbour harbour) {
+        this.brand = brand;
+        this.make = make;
+        this.name = name;
+        this.image = image;
+        this.owners = new ArrayList<>();
+        this.harbour = harbour;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -86,5 +95,12 @@ public class Boat {
 
     public void setOwners(List<Owner> owners) {
         this.owners = owners;
+    }
+
+    public void addOwner(Owner owner) {
+        if (owner != null) {
+            this.owners.add(owner);
+            owner.getBoats().add(this);
+        }
     }
 }

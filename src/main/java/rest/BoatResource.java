@@ -24,6 +24,13 @@ public class BoatResource {
     @Context
     SecurityContext securityContext;
 
+    @Path("/all")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAll() {
+        return gson.toJson(facade.getAllBoats());
+    }
+
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,5 +55,16 @@ public class BoatResource {
         Integer harbourId = gson.fromJson(harbour, Integer.class);
         BoatDTO connectedBoat = facade.connectToHarbor(boatId, harbourId);
         return gson.toJson(connectedBoat);
+    }
+
+    @Path("/{id}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String editBoat(@PathParam("id") int id, String boat) {
+        BoatDTO b = gson.fromJson(boat, BoatDTO.class);
+        b.setId(id);
+        BoatDTO bEdited = facade.editBoat(b);
+        return gson.toJson(bEdited);
     }
 }

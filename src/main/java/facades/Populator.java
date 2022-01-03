@@ -8,6 +8,7 @@ package facades;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import dtos.Boat.BoatDTO;
 import entities.Boat;
 import entities.Harbour;
 import entities.Owner;
@@ -17,22 +18,18 @@ public class Populator {
     public static void populate() {
         EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
-        Owner o1 = new Owner("Name", "Address", "Phone");
-        Boat b1 = new Boat("Brand", "Make", "Name", "Image");
-        Harbour h1 = new Harbour("Name", "Address", 50);
+        BoatFacade facade = BoatFacade.getInstance(emf);
 
-        Boat b2 = new Boat("Brand2", "Make2", "Name2", "Image2");
+        Boat boat = new Boat("Gump", "Honda", "Shrimping Boat", "google.com");
 
-        o1.addBoat(b1);
-        o1.addBoat(b2);
-        b1.setHarbour(h1);
+        Harbour harbour = new Harbour(2);
 
-        em.getTransaction().begin();
-        em.persist(b1);
-        em.persist(b2);
-        em.persist(o1);
-        em.persist(h1);
-        em.getTransaction().commit();
+        boat.setHarbour(harbour);
+
+
+        BoatDTO createdBoat = new BoatDTO(boat);
+        facade.createBoat(createdBoat);
+
     }
 
     public static void main(String[] args) {

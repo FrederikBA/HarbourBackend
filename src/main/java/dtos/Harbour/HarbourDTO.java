@@ -1,7 +1,5 @@
 package dtos.Harbour;
 
-import dtos.Boat.BoatDTO;
-import entities.Boat;
 import entities.Harbour;
 
 import java.util.List;
@@ -9,11 +7,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class HarbourDTO {
-    private int id;
+    private Integer id;
     private String name;
     private String address;
     private int capacity;
-    private List<BoatDTO> boats;
 
     public static List<HarbourDTO> getFromList(List<Harbour> harbours) {
         return harbours.stream()
@@ -26,14 +23,13 @@ public class HarbourDTO {
         this.name = harbour.getName();
         this.address = harbour.getAddress();
         this.capacity = harbour.getCapacity();
-        this.boats = BoatDTO.getFromList(harbour.getBoats());
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -61,25 +57,17 @@ public class HarbourDTO {
         this.capacity = capacity;
     }
 
-    public List<BoatDTO> getBoats() {
-        return boats;
-    }
-
-    public void setBoats(List<BoatDTO> boats) {
-        this.boats = boats;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HarbourDTO that = (HarbourDTO) o;
-        return id == that.id && capacity == that.capacity && Objects.equals(name, that.name) && Objects.equals(address, that.address) && Objects.equals(boats, that.boats);
+        return capacity == that.capacity && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(address, that.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, address, capacity, boats);
+        return Objects.hash(id, name, address, capacity);
     }
 
     @Override
@@ -89,7 +77,6 @@ public class HarbourDTO {
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", capacity=" + capacity +
-                ", boats=" + boats +
                 '}';
     }
 }

@@ -10,12 +10,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class BoatDTO {
-    private int id;
+    private Integer id;
     private String brand;
     private String make;
     private String name;
     private String image;
     private List<OwnerDTO> owners;
+    private HarbourDTO harbour;
 
     public static List<BoatDTO> getFromList(List<Boat> boats) {
         return boats.stream()
@@ -30,6 +31,7 @@ public class BoatDTO {
         this.name = boat.getName();
         this.image = boat.getImage();
         this.owners = OwnerDTO.getFromList(boat.getOwners());
+        this.harbour = new HarbourDTO(boat.getHarbour());
     }
 
     public BoatDTO(String brand, String make, String name, String image) {
@@ -40,11 +42,11 @@ public class BoatDTO {
         this.image = image;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -88,17 +90,25 @@ public class BoatDTO {
         this.owners = owners;
     }
 
+    public HarbourDTO getHarbour() {
+        return harbour;
+    }
+
+    public void setHarbour(HarbourDTO harbour) {
+        this.harbour = harbour;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BoatDTO boatDTO = (BoatDTO) o;
-        return id == boatDTO.id && Objects.equals(brand, boatDTO.brand) && Objects.equals(make, boatDTO.make) && Objects.equals(name, boatDTO.name) && Objects.equals(image, boatDTO.image) && Objects.equals(owners, boatDTO.owners);
+        return Objects.equals(id, boatDTO.id) && Objects.equals(brand, boatDTO.brand) && Objects.equals(make, boatDTO.make) && Objects.equals(name, boatDTO.name) && Objects.equals(image, boatDTO.image) && Objects.equals(owners, boatDTO.owners) && Objects.equals(harbour, boatDTO.harbour);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, brand, make, name, image, owners);
+        return Objects.hash(id, brand, make, name, image, owners, harbour);
     }
 
     @Override
@@ -110,6 +120,7 @@ public class BoatDTO {
                 ", name='" + name + '\'' +
                 ", image='" + image + '\'' +
                 ", owners=" + owners +
+                ", harbour=" + harbour +
                 '}';
     }
 }

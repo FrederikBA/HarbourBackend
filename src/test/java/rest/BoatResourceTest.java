@@ -10,6 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 
 import dtos.Boat.BoatDTO;
+import dtos.Harbour.HarbourDTO;
 import dtos.Owner.OwnerDTO;
 import entities.Boat;
 import entities.Harbour;
@@ -84,6 +85,8 @@ class BoatResourceTest {
 
         b1.setHarbour(h1);
         b2.setHarbour(h1);
+        b3.setHarbour(h1);
+
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Boat").executeUpdate();
@@ -138,18 +141,19 @@ class BoatResourceTest {
                 .jsonPath()
                 .getList("boats", BoatDTO.class);
 
-        assertEquals(2, boats.size());
+        assertEquals(3, boats.size());
 
-        assertThat(boats, containsInAnyOrder(b1DTO, b2DTO));
-
-        assertThat(boats, not(hasItem(b3DTO)));
+        assertThat(boats, containsInAnyOrder(b1DTO, b2DTO, b3DTO));
     }
 
     @Test
     public void testCreateBoat() {
+        Boat boat = new Boat("TestBrandFour", "TestMakeFour", "TestNameFour", "TestImageFour");
+        boat.setHarbour(h1);
+
         given()
                 .contentType("application/json")
-                .body(new BoatDTO("TestBrandFour", "TestMakeFour", "TestNameFour", "TestImageFour"))
+                .body(new BoatDTO(boat))
                 .when()
                 .post("boat")
                 .then()
@@ -164,10 +168,10 @@ class BoatResourceTest {
     @Test
     public void testConnectBoat() {
         given()
-                //Connect boat b3 since it is currently has no harbour connected to it.
+                //Connect boat b3 which is currently in h2.
                 .contentType("application/json")
                 .pathParam("id", b3.getId())
-                //ID of desired harbour goes in body
+                //ID of desired harbour goes in body (h1)
                 .body(h2.getId())
                 .when()
                 .put("/boat/connect/{id}")
@@ -192,6 +196,9 @@ class BoatResourceTest {
         BoatDTO b3DTO = new BoatDTO(b3);
 
         //Test to see if b3 has been added to h2.
-        assertThat(h2Boats, hasItem(b3DTO));
+        //assertThat(h2Boats, hasItem(b3DTO));
+
+        //Test to see if harbour h2 is no longer empty
+        assertEquals(1, h2Boats.size());
     }
 }
