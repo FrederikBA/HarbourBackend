@@ -17,5 +17,4 @@ public class OwnerFacade {
         }
         return instance;
     }
-
 }
