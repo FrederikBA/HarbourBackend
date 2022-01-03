@@ -5,13 +5,30 @@
  */
 package facades;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import entities.Boat;
+import entities.Harbour;
+import entities.Owner;
 import utils.EMF_Creator;
 
 public class Populator {
     public static void populate() {
         EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        Owner o1 = new Owner("Name","Address","Phone");
+        Boat b1 = new Boat("Brand","Make","Name","Image");
+        Harbour h1 = new Harbour("Name","Address",50);
+
+        o1.addBoat(b1);
+        b1.setHarbour(h1);
+
+        em.getTransaction().begin();
+        em.persist(b1);
+        em.persist(o1);
+        em.persist(h1);
+        em.getTransaction().commit();
     }
 
     public static void main(String[] args) {
