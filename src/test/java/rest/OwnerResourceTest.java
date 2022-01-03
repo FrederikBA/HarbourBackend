@@ -9,7 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
 
+import dtos.Boat.BoatDTO;
 import dtos.Owner.OwnerDTO;
+import entities.Boat;
 import entities.Owner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -37,6 +39,7 @@ class OwnerResourceTest {
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
     private static Owner o1, o2, o3;
+    private static Boat b1, b2, b3;
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -75,12 +78,25 @@ class OwnerResourceTest {
         o2 = new Owner("TestNameTwo", "TestAddressTwo", "TestPhoneTwo");
         o3 = new Owner("TestNameThree", "TestAddressThree", "TestPhoneThree");
 
+        b1 = new Boat("TestBrandOne", "TestMakeOne", "TestNameOne", "TestImageOne");
+        b2 = new Boat("TestBrandTwo", "TestMakeTwo", "TestNameTwo", "TestImageTwo");
+        b3 = new Boat("TestBrandThree", "TestMakeThree", "TestNameThree", "TestImageThree");
+
+        o1.addBoat(b1);
+        o1.addBoat(b2);
+        o2.addBoat(b1);
+        o2.addBoat(b3);
+
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Owner").executeUpdate();
+            em.createQuery("delete from Boat").executeUpdate();
             em.persist(o1);
             em.persist(o2);
             em.persist(o3);
+            em.persist(b1);
+            em.persist(b2);
+            em.persist(b3);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -131,5 +147,32 @@ class OwnerResourceTest {
         assertEquals(3, owners.size());
 
         assertThat(owners, containsInAnyOrder(o1DTO, o2DTO, o3DTO));
+    }
+
+    @Test
+    public void testGetBoatsByHarbour() {
+        List<OwnerDTO> owners;
+
+        OwnerDTO o1DTO = new OwnerDTO(o1);
+        OwnerDTO o2DTO = new OwnerDTO(o2);
+        OwnerDTO o3DTO = new OwnerDTO(o3);
+
+        owners = given()
+                .contentType("application/json")
+                .accept(ContentType.JSON)
+                .pathParam("id", b1.getId())
+                .when()
+                .get("/owner/{id}").then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath()
+                .getList("owners", OwnerDTO.class);
+
+        assertEquals(2, owners.size());
+
+        assertThat(owners, containsInAnyOrder(o1DTO, o2DTO));
+
+        assertThat(owners, not(hasItem(o3DTO)));
     }
 }

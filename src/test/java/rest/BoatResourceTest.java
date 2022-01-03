@@ -139,7 +139,7 @@ class BoatResourceTest {
                 .getList("boats", BoatDTO.class);
 
         assertEquals(2, boats.size());
-        
+
         assertThat(boats, containsInAnyOrder(b1DTO, b2DTO));
 
         assertThat(boats, not(hasItem(b3DTO)));

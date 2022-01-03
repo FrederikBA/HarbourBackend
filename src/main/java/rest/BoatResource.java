@@ -26,7 +26,7 @@ public class BoatResource {
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getById(@PathParam("id") int id) {
+    public String getBoatsByHarbour(@PathParam("id") int id) {
         return gson.toJson(facade.getBoatsByHarbour(id));
     }
 }
