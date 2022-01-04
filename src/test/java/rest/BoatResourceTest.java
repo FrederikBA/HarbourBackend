@@ -201,4 +201,28 @@ class BoatResourceTest {
         //Test to see if harbour h2 is no longer empty
         assertEquals(1, h2Boats.size());
     }
+
+    @Test
+    public void testDelete() {
+        given()
+                .contentType("application/json")
+                .pathParam("id", b3.getId())
+                .delete("boat/{id}")
+                .then()
+                .assertThat()
+                .statusCode(200);
+
+        List<BoatDTO> allBoats;
+
+        allBoats = given()
+                .contentType("application/json")
+                .when()
+                .get("/boat/all")
+                .then()
+                .extract().body().jsonPath().getList("boats", BoatDTO.class);
+
+        BoatDTO b3DTO = new BoatDTO(b3);
+
+        assertThat(allBoats, not(hasItem(b3DTO)));
+    }
 }

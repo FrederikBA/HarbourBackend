@@ -67,4 +67,11 @@ public class BoatResource {
         BoatDTO bEdited = facade.editBoat(b);
         return gson.toJson(bEdited);
     }
+
+    @Path("/{id}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public String deleteBoat(@PathParam("id") int id) {
+        return gson.toJson(facade.deleteBoat(id));
+    }
 }

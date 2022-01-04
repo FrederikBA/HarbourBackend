@@ -134,4 +134,18 @@ public class BoatFacade {
             em.close();
         }
     }
+
+    public BoatDTO deleteBoat(int id) {
+        EntityManager em = emf.createEntityManager();
+        Boat boat = em.find(Boat.class, id);
+        try {
+            em.getTransaction().begin();
+            em.createNativeQuery("DELETE FROM BOAT_OWNER WHERE boats_id = ?").setParameter(1, boat.getId()).executeUpdate();
+            em.remove(boat);
+            em.getTransaction().commit();
+            return new BoatDTO(boat);
+        } finally {
+            em.close();
+        }
+    }
 }

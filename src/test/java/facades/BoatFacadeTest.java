@@ -28,6 +28,7 @@ class BoatFacadeTest {
     private static BoatFacade facade;
     private static Boat b1, b2, b3;
     private static Harbour h1, h2;
+    private static Owner o1;
 
     public BoatFacadeTest() {
     }
@@ -52,15 +53,19 @@ class BoatFacadeTest {
         b2 = new Boat("TestBrandTwo", "TestMakeTwo", "TestNameTwo", "TestImageTwo", h1);
         b3 = new Boat("TestBrandThree", "TestMakeThree", "TestNameThree", "TestImageThree", h2);
 
+        o1 = new Owner("TestOwner","TestOwnersAddress","11223344");
+
         try {
             em.getTransaction().begin();
             em.createQuery("delete from Boat").executeUpdate();
+            em.createQuery("delete from Owner").executeUpdate();
             em.createQuery("delete from Harbour").executeUpdate();
             em.persist(b1);
             em.persist(b2);
             em.persist(b3);
             em.persist(h1);
             em.persist(h2);
+            em.persist(o1);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -125,5 +130,47 @@ class BoatFacadeTest {
 
         //Confirm that harbour h2 now has the boat b3
         assertThat(harbourTwo, hasItem(b3DTO));
+    }
+
+    @Test
+    public void editBoatTest() {
+        b1.setBrand("EditedBrand");
+        b1.setMake("EditedMake");
+        b1.setName("EditedName");
+        b1.setImage("EditedImage");
+
+        b1.setHarbour(h2);
+        b1.addOwner(o1);
+
+        BoatDTO editedBoat = new BoatDTO(b1);
+        facade.editBoat(editedBoat);
+
+        assertEquals("EditedName", editedBoat.getName());
+        assertEquals("EditedMake", editedBoat.getMake());
+        assertEquals("EditedBrand", editedBoat.getBrand());
+        assertEquals("EditedImage", editedBoat.getImage());
+
+        assertEquals(h2.getId(), editedBoat.getHarbour().getId());
+
+        OwnerDTO o1DTO = new OwnerDTO(o1);
+
+        assertThat(editedBoat.getOwners(), hasItem(o1DTO));
+
+    }
+
+    @Test
+    public void deleteBoatTest() {
+        facade.deleteBoat(b3.getId());
+
+        List<BoatDTO> allBoats = facade.getAllBoats().getBoats();
+
+        assertEquals(2, allBoats.size());
+
+        BoatDTO b1DTO = new BoatDTO(b1);
+        BoatDTO b2DTO = new BoatDTO(b2);
+        BoatDTO b3DTO = new BoatDTO(b3);
+
+        assertThat(allBoats, not(hasItem(b3DTO)));
+        assertThat(allBoats, containsInAnyOrder(b1DTO, b2DTO));
     }
 }
