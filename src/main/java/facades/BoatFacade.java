@@ -119,7 +119,10 @@ public class BoatFacade {
             }
 
             //Edit harbour
-
+            TypedQuery<Harbour> query = em.createQuery("SELECT h FROM Harbour h WHERE h.id =:harbourId", Harbour.class);
+            query.setParameter("harbourId", boatDTO.getHarbour().getId());
+            Harbour harbour = query.getSingleResult();
+            boat.setHarbour(harbour);
 
             //Persist the boat
             em.getTransaction().begin();
